@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: bss-plex
+
+    volumes:
+      - .:/app
+
+    command: tail -f /dev/null # Command for keeping the process running
