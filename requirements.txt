@@ -1,1 +1,5 @@
 cplex==12.10.0.3
+docplex==2.19.202
+pandas
+numpy
+mypy
