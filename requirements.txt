@@ -3,3 +3,9 @@ docplex==2.19.202
 pandas
 numpy
 mypy
+loguru
+plotly
+matplotlib
+ipykernel
+pytest
+networkx
