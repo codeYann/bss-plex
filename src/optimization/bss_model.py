@@ -1,6 +1,6 @@
 import cplex
 from cplex.exceptions import CplexError
-from docplex.mp import Model
+import docplex.mp.model as cpx
 from utils import utils
 from loguru import logger
 from typing import List
@@ -36,9 +36,28 @@ class BssModel:
     def setup_variables(self) -> None:
         for i in range(self.num_vertices):
             self.x.append([f"x_{i}_{j}" for j in range(self.num_vertices)])
+
+        for i in range(self.num_vertices):
             for j in range(self.num_vertices):
                 if i != j:
-                    pass
+                    self.model.variables.add(
+                        obj=[self.distance_matrix[i, j]],
+                        lb=[0],
+                        ub=[1],
+                        types=[self.model.variables.type.binary],
+                        names=[self.x[i][j]],
+                    )
+                else:
+                    self.model.variables.add(
+                        lb=[0],
+                        ub=[0],
+                        types=[self.model.variables.type.binary],
+                        names=[self.x[i][j]],
+                    )
+
+    def setup_constraints(self) -> None:
+        # TODO
+        pass
 
 
 def main() -> None:
@@ -49,5 +68,9 @@ def main() -> None:
         )
         problem = BssModel(num_vertices, demands, vehicle_capacity, distance_matrix)
         problem.setup_model()
+        problem.setup_variables()
+
+        print(problem.model.variables.get_num_binary())
+        print(problem.model.variables.get_types())
     except Exception as e:
         logger.exception(e)
