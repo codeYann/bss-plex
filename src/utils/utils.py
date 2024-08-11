@@ -27,7 +27,9 @@ def get_data_json(path: str) -> Union[Dict[str, Any], None]:
         raise FileNotFoundError(f"File not found at path: {path}")
     except json.JSONDecodeError:
         logger.error(f"Invalid JSON format in file: {path}")
-        raise json.JSONDecodeError(f"Invalid JSON format in file: {path}")
+        raise json.JSONDecodeError(
+            msg=f"Invalid JSON format in file: {path}", doc="", pos=0
+        )
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
         raise e
