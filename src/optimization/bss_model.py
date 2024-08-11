@@ -1,20 +1,18 @@
-import cplex
-from cplex.exceptions import CplexError
+import mip
 from utils import utils
 from loguru import logger
 from typing import List, Optional, Tuple
 import numpy as np
-import itertools
 
 
 class BSS:
-    model: cplex.Cplex = None
+    model: mip.Model = None
     num_vertices: int
     demands: np.ndarray
     vehicle_capacity: int
     distance_matrix: np.matrix
     num_vehicle: int
-    x: List[List[str]] = []
+    x: List[List[mip.Var]] = []  # Varibles matrix
 
     def __init__(
         self,
@@ -31,128 +29,103 @@ class BSS:
         self.num_vehicle = num_vehicle
 
     def setup_model(self) -> None:
-        self.model = cplex.Cplex()
-        self.model.set_problem_name("BSS")
-        self.model.set_problem_type(cplex.Cplex.problem_type.MILP)
-        self.model.set_results_stream(None)
+        self.model = mip.Model(name="BSS", sense=mip.MINIMIZE, solver_name=mip.CBC)
 
     def setup_variables(self) -> None:
-        for i in range(self.num_vertices):
-            self.x.append([f"x_{i}_{j}" for j in range(self.num_vertices)])
+        # Setting variables name
 
-        for i in range(self.num_vertices):
-            for j in range(self.num_vertices):
-                if i != j:
-                    self.model.variables.add(
-                        obj=[self.distance_matrix[i, j]],
-                        lb=[0],
-                        ub=[1],
-                        types=[self.model.variables.type.binary],
-                        names=[self.x[i][j]],
-                    )
-                else:
-                    self.model.variables.add(
-                        lb=[0],
-                        ub=[0],
-                        types=[self.model.variables.type.binary],
-                        names=[self.x[i][j]],
-                    )
+        def var_name(i: int, j: int) -> str:
+            return f"x_{i}_{j}"
+
+        self.x = [
+            [
+                self.model.add_var(var_type=mip.BINARY, name=var_name(i, j))
+                for j in range(self.num_vertices)
+            ]
+            for i in range(self.num_vertices)
+        ]
+
+    def set_objective_function(self) -> None:
+        self.model.objective = mip.minimize(
+            mip.xsum(
+                self.distance_matrix[i, j] * self.x[i][j]
+                for i in range(self.num_vertices)
+                for j in range(self.num_vertices)
+            )
+        )
 
     def add_constraints(self) -> None:
         # Constraint: \sum_{i \in V} x_{ij} = 1, \forall j \in V \setminus  \{0\}
 
         for i in range(self.num_vertices):
-            self.model.linear_constraints.add(
-                lin_expr=[
-                    cplex.SparsePair(
-                        ind=[self.x[i][j] for j in range(1, self.num_vertices)],
-                        val=[1] * (self.num_vertices - 1),
-                    )
-                ],
-                senses=["E"],
-                rhs=[1],
+            self.model += (
+                mip.xsum(self.x[i][j] for j in range(1, self.num_vertices)) == 1,
+                "every node is viseted once on arc (i, j) except depot",
             )
 
         # Constraint: \sum_{i \in V} x_{ji} = 1, \forall j \in V \setminus  \{0\}
 
         for i in range(self.num_vertices):
-            self.model.linear_constraints.add(
-                lin_expr=[
-                    cplex.SparsePair(
-                        ind=[self.x[j][i] for j in range(1, self.num_vertices)],
-                        val=[1] * (self.num_vertices - 1),
-                    )
-                ],
-                senses=["E"],
-                rhs=[1],
+            self.model += (
+                mip.xsum(self.x[j][i] for j in range(1, self.num_vertices)) == 1,
+                "every node is visited once on arc (j, i) except depot",
             )
 
         # Constraint: \sum_{j \in V} x_{0j} <= m (num_vehicle)
 
-        self.model.linear_constraints.add(
-            lin_expr=[
-                cplex.SparsePair(
-                    ind=[self.x[0][j] for j in range(1, self.num_vertices)],
-                    val=[1] * (self.num_vertices - 1),
-                )
-            ],
-            senses=["L"],
-            rhs=[self.num_vehicle],
+        self.model += (
+            mip.xsum(self.x[0][j] for j in range(self.num_vertices))
+            <= self.num_vehicle,
+            "most m vehicles leave depot",
         )
 
         # Constraint: \sum_{j \in V \setminus \{0\}} x_{0j} = \sum_{j \in V \setminus \{0\}} x_{j0}
 
-        self.model.linear_constraints.add(
-            lin_expr=[
-                cplex.SparsePair(
-                    ind=[self.x[0][j] for j in range(1, self.num_vertices)]
-                    + [self.x[j][0] for j in range(1, self.num_vertices)],
-                    val=([1] * (self.num_vertices - 1))
-                    + ([-1] * (self.num_vertices - 1)),
-                )
-            ],
-            senses=["E"],
-            rhs=[0],
+        self.model += (
+            mip.xsum(self.x[0][j] - self.x[j][0] for j in range(1, self.num_vertices))
+            == 0,
+            "all vehicles that are used return to the depot at the end of their route",
         )
 
         # Constraint:
         # \sum_{i \in S} \sum_{j \in S} x_{ij} \leq |S| - \max\{1, \left\lceil \dfrac{|\sum_{i \in S} q_{i}|}{Q} \right\rceil\}, S \subseteq V \setminus \{0\}, S \neq \emptyset
 
-        for size in range(2, self.num_vertices):
-            for S in itertools.combinations(range(1, self.num_vertices), size):
-                demand_sum = np.sum(self.demands[i] for i in S)
-                max_vehicles = max(1, int(np.ceil(demand_sum / self.vehicle_capacity)))
-                S_list = list(S)
+        # for size in range(2, self.num_vertices):
+        #     for S in itertools.combinations(range(1, self.num_vertices), size):
+        #         demand_sum = np.sum(self.demands[i] for i in S)
+        #         max_vehicles = max(1, int(np.ceil(demand_sum / self.vehicle_capacity)))
+        #         S_list = list(S)
 
-                self.model.linear_constraints.add(
-                    lin_expr=[
-                        cplex.SparsePair(
-                            ind=[
-                                self.x[i][j] for i in S_list for j in S_list if i != j
-                            ],
-                            val=[1]
-                            * len([1 for i in S_list for j in S_list if i != j]),
-                        )
-                    ],
-                    senses=["L"],
-                    rhs=[len(S_list) - max_vehicles],
-                )
+        #         self.model.linear_constraints.add(
+        #             lin_expr=[
+        #                 cplex.SparsePair(
+        #                     ind=[
+        #                         self.x[i][j] for i in S_list for j in S_list if i != j
+        #                     ],
+        #                     val=[1]
+        #                     * len([1 for i in S_list for j in S_list if i != j]),
+        #                 )
+        #             ],
+        #             senses=["L"],
+        #             rhs=[len(S_list) - max_vehicles],
+        #         )
 
     def solve(self) -> Optional[List[Tuple[int, int]]]:
-        try:
-            self.model.solve()
-            solution = self.model.solution.get_values()
-            selected_edges = [
-                (i, j)
-                for i in range(self.num_vertices)
-                for j in range(self.num_vertices)
-                if solution[self.model.variables.get_indices(self.x[i][j])] == 1
-            ]
+        pass
+        # try:
+        #     self.model.solve()
+        #     solution = self.model.solution.get_values()
+        #     selected_edges = [
+        #         (i, j)
+        #         for i in range(self.num_vertices)
+        #         for j in range(self.num_vertices)
+        #         if solution[self.model.variables.get_indices(self.x[i][j])] == 1
+        #     ]
 
-            return selected_edges
-        except CplexError as error:
-            logger.exception(error)
-            return None
+        #     return selected_edges
+        # except CplexError as error:
+        #     logger.exception(error)
+        #     return None
 
 
 def main() -> None:
@@ -164,8 +137,10 @@ def main() -> None:
         problem = BSS(num_vertices, demands, vehicle_capacity, distance_matrix)
         problem.setup_model()
         problem.setup_variables()
+        problem.set_objective_function()
+
         problem.add_constraints()
 
-        s = problem.solve()
+        # s = problem.solve()
     except Exception as e:
         logger.exception(e)
