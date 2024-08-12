@@ -1,18 +1,22 @@
 import mip
-from utils import utils
+from mip.constants import CutType
+from utils.data_set import extract_data_set_info, get_data_json
+from utils.matrix import fix_diagonal_weight
 from loguru import logger
 from typing import List, Optional, Tuple
+from networkx import DiGraph, minimum_cut
+from itertools import product
 import numpy as np
 
 
 class BSS:
-    model: mip.Model = None
+    model: mip.Model
     num_vertices: int
     demands: np.ndarray
     vehicle_capacity: int
     distance_matrix: np.matrix
     num_vehicle: int
-    x: List[List[mip.Var]] = []  # Varibles matrix
+    x: List[List[mip.Var]] = []  # variables matrix
 
     def __init__(
         self,
@@ -82,33 +86,65 @@ class BSS:
         # Constraint: \sum_{j \in V \setminus \{0\}} x_{0j} = \sum_{j \in V \setminus \{0\}} x_{j0}
 
         self.model += (
-            mip.xsum(self.x[0][j] - self.x[j][0] for j in range(1, self.num_vertices))
-            == 0,
+            mip.xsum(self.x[0][j] for j in range(1, self.num_vertices))
+            == mip.xsum(self.x[j][0] for j in range(1, self.num_vertices)),
             "all vehicles that are used return to the depot at the end of their route",
         )
 
         # Constraint:
         # \sum_{i \in S} \sum_{j \in S} x_{ij} \leq |S| - \max\{1, \left\lceil \dfrac{|\sum_{i \in S} q_{i}|}{Q} \right\rceil\}, S \subseteq V \setminus \{0\}, S \neq \emptyset
 
-        # for size in range(2, self.num_vertices):
-        #     for S in itertools.combinations(range(1, self.num_vertices), size):
-        #         demand_sum = np.sum(self.demands[i] for i in S)
-        #         max_vehicles = max(1, int(np.ceil(demand_sum / self.vehicle_capacity)))
-        #         S_list = list(S)
+    def adding_exponencial_constraints(self) -> None:
+        new_constraints = True
+        while new_constraints:
+            self.model.optimize(relax=True)
 
-        #         self.model.linear_constraints.add(
-        #             lin_expr=[
-        #                 cplex.SparsePair(
-        #                     ind=[
-        #                         self.x[i][j] for i in S_list for j in S_list if i != j
-        #                     ],
-        #                     val=[1]
-        #                     * len([1 for i in S_list for j in S_list if i != j]),
-        #                 )
-        #             ],
-        #             senses=["L"],
-        #             rhs=[len(S_list) - max_vehicles],
-        #         )
+            logger.success("Status: ")
+            print(self.model.status)
+
+            logger.success("Objective value: ")
+            print(self.model.objective_value)
+
+            G = DiGraph()
+
+            for i in range(self.num_vertices):
+                for j in range(self.num_vertices):
+                    G.add_edge(i, j, capacity=self.distance_matrix[i, j])
+
+            new_constraints = False
+            for n1, n2 in [
+                (i, j)
+                for (i, j) in product(
+                    range(self.num_vertices), range(self.num_vertices)
+                )
+                if i != j
+            ]:
+                cut_value, (S, _) = minimum_cut(G, n1, n2)
+
+                if cut_value <= 0.99:
+                    self.model += (
+                        mip.xsum(
+                            self.x[i][j] for i in S for j in S if self.x[i][j] in S
+                        )
+                        - (len(S) - 1)
+                        <= 0
+                    )
+
+                    new_constraints = True
+
+            if not new_constraints:
+                cp = self.model.generate_cuts(
+                    [
+                        mip.CutType.GOMORY,
+                        CutType.MIR,
+                        CutType.ZERO_HALF,
+                        CutType.KNAPSACK_COVER,
+                    ]
+                )
+
+                if cp.cuts:
+                    self.model += cp
+                    new_constraints = True
 
     def solve(self) -> Optional[List[Tuple[int, int]]]:
         pass
@@ -130,16 +166,24 @@ class BSS:
 
 def main() -> None:
     try:
-        data = utils.get_data_json("../../data/Bari/1Bari30.json")
+        data = get_data_json("../../data/Bari/1Bari30.json")
         (num_vertices, demands, vehicle_capacity, distance_matrix) = (
-            utils.extract_data_set_info(ds=data)
+            extract_data_set_info(ds=data)
         )
+        fix_diagonal_weight(distance_matrix=distance_matrix)
+        print(distance_matrix)
         problem = BSS(num_vertices, demands, vehicle_capacity, distance_matrix)
         problem.setup_model()
         problem.setup_variables()
         problem.set_objective_function()
 
         problem.add_constraints()
+        problem.adding_exponencial_constraints()
+
+        for i in range(0, 13):
+            for j in range(0, 13):
+                if problem.x[i][j].x >= 0.99:
+                    print("{} -> {}".format(i, j))
 
         # s = problem.solve()
     except Exception as e:
