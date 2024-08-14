@@ -44,7 +44,6 @@ class BSS:
         self.model = mip.Model(sense=mip.MINIMIZE, solver_name=mip.CBC)
 
         # Set decisions variables
-
         self.x = {
             a: self.model.add_var(
                 name="x_{}_{}".format(a[0], a[1]), var_type=mip.BINARY
@@ -65,7 +64,6 @@ class BSS:
 
     def _add_constraints(self) -> None:
         # Constraint: Every node besides depot is visited once.
-
         for i in self.V:
             self.model += (
                 mip.xsum(self.x[i, j] for j in self.V - {0} if (i, j) in self.A) == 1,
@@ -85,7 +83,6 @@ class BSS:
         )
 
         # Constraint: All vehicles used must return to the depot
-
         self.model += (
             mip.xsum(self.x[0, j] for j in self.V - {0} if (0, j) in self.A)
             == mip.xsum(self.x[j, 0] for j in self.V - {0} if (0, j) in self.A),
@@ -93,13 +90,16 @@ class BSS:
         )
 
     def _cutting_plane(self):
+        logger.info("Processing cutting plane method")
+
         constraints = True
 
         while constraints:
             self.model.optimize(relax=True)
-            print(
-                "Status: {}, objective value: {}".format(
-                    self.model.status, self.model.objective_values
+
+            logger.info(
+                "Status: {}, Objective value: {}".format(
+                    self.model.status, self.model.objective_value
                 )
             )
 
@@ -110,13 +110,17 @@ class BSS:
 
             constraints = False
 
-            for n1, n2 in [(i, j) for (i, j) in product(self.V, self.V) if i != j]:
-                cut_value, (S, NS) = minimum_cut(G, n1, n2)
+            for u, v in [(i, j) for (i, j) in product(self.V, self.V) if i != j]:
+                cut_value, (S, NS) = minimum_cut(G, u, v)
+
                 if cut_value <= 0.99:
-                    self.model += (
-                        mip.xsum(self.x[a] for a in self.A if (a[0] in S and a[1] in S))
-                        <= len(S) - 1
+                    self.model += mip.xsum(
+                        self.x[a] for a in self.A if (a[0] in S and a[1] in S)
+                    ) <= len(S) - max(
+                        1, np.ceil((abs(sum(self.q[i] for i in S))) / self.Q)
                     )
+                    constraints = True
+
             if not constraints and self.model.solver_name.lower() == "cbc":
                 cp = self.model.generate_cuts(
                     [CutType.GOMORY, CutType.MIR, CutType.KNAPSACK_COVER]
