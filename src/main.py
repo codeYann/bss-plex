@@ -21,12 +21,10 @@ if __name__ == "__main__":
             for j in V:
                 A[(i, j)] = distance_matrix[i, j]
 
-        m = 2
+        m = 1
         Q = vehicle_capacity
         q = demands
         c = distance_matrix
-
-        print(V, A, m, Q, q, c)
 
         bss = BSS(V, A, m, Q, q, c)
         bss.solve()
