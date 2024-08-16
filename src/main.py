@@ -1,4 +1,3 @@
-# from optimization.bss_model import main
 from loguru import logger
 from optimization.model import BSS
 from utils.data_set import extract_data_set_info, get_data_json
