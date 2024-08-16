@@ -1,6 +1,6 @@
 import mip
-from mip.constants import CutType
 import numpy as np
+from mip.constants import CutType
 from typing import Set, Dict, Tuple
 from loguru import logger
 from networkx import DiGraph, minimum_cut
@@ -40,15 +40,15 @@ class BSS:
         # Validate inputs
         assert len(q) == self.n, "Demand list size must match the number of vertices"
 
-        # Initialize the MIP model
+        # Initialize MIP model
         self.model = mip.Model(sense=mip.MINIMIZE, solver_name=mip.CBC)
 
         # Set decisions variables
         self.x = {
-            a: self.model.add_var(
-                name="x_{}_{}".format(a[0], a[1]), var_type=mip.BINARY
+            (i, j): self.model.add_var(
+                name="x_{}_{}".format(i, j), var_type=mip.BINARY, lb=0, ub=1
             )
-            for a in A
+            for (i, j) in A
         }
 
         self._set_objective()
@@ -58,21 +58,18 @@ class BSS:
         """
         Sets the objective function to minimize the total cost.
         """
-        self.model.objective = mip.xsum(
-            self.c[i, j] * self.x[i, j] for (i, j) in self.A
-        )
+        self.model.objective = mip.xsum(c * self.x[a] for a, c in self.A.items())
 
     def _add_constraints(self) -> None:
         # Constraint: Every node besides depot is visited once.
-        for i in self.V:
+        for j in self.V - {0}:
             self.model += (
-                mip.xsum(self.x[i, j] for j in self.V - {0} if (i, j) in self.A) == 1,
+                mip.xsum(self.x[i, j] for i in self.V if (i, j) in self.A) == 1,
                 "every node is viseted once on arc (i, j) except depot",
             )
 
-        for i in self.V:
             self.model += (
-                mip.xsum(self.x[j, i] for j in self.V - {0} if (i, j) in self.A) == 1,
+                mip.xsum(self.x[j, i] for i in self.V if (i, j) in self.A) == 1,
                 "every node is viseted once on arc (j, i) except depot",
             )
 
@@ -84,8 +81,8 @@ class BSS:
 
         # Constraint: All vehicles used must return to the depot
         self.model += (
-            mip.xsum(self.x[0, j] for j in self.V - {0} if (0, j) in self.A)
-            == mip.xsum(self.x[j, 0] for j in self.V - {0} if (0, j) in self.A),
+            mip.xsum(self.x[0, j] for j in (self.V - {0}) if (0, j) in self.A)
+            == mip.xsum(self.x[j, 0] for j in (self.V - {0}) if (0, j) in self.A),
             "all vehicles used must return to the depot",
         )
 
@@ -105,42 +102,50 @@ class BSS:
 
             G = DiGraph()
 
-            for a in self.A:
-                G.add_edge(a[0], a[1], capacity=self.x[a].x)
+            for i, j in self.A:
+                G.add_edge(i, j, capacity=self.x[i, j].x)
 
             constraints = False
 
-            for u, v in [(i, j) for (i, j) in product(self.V, self.V) if i != j]:
-                cut_value, (S, NS) = minimum_cut(G, u, v)
+            for u, v in [
+                (i, j) for (i, j) in product(list(self.V), list(self.V)) if i != j
+            ]:
+                cut_value, (S, _) = minimum_cut(G, u, v)
+                S = S - {0}
 
                 if cut_value <= 0.99:
-                    self.model += mip.xsum(
-                        self.x[a] for a in self.A if (a[0] in S and a[1] in S)
-                    ) <= len(S) - max(
-                        1, np.ceil((abs(sum(self.q[i] for i in S))) / self.Q)
+                    self.model += (
+                        mip.xsum(self.x[i, j] for i, j in self.A if (i in S and j in S))
+                        <= len(S) - 1
                     )
+
                     constraints = True
 
             if not constraints and self.model.solver_name.lower() == "cbc":
                 cp = self.model.generate_cuts(
-                    [CutType.GOMORY, CutType.MIR, CutType.KNAPSACK_COVER]
+                    [
+                        CutType.GOMORY,
+                        CutType.MIR,
+                        CutType.ZERO_HALF,
+                        CutType.KNAPSACK_COVER,
+                    ]
                 )
+
                 if cp.cuts:
                     self.model += cp
                     constraints = True
 
-        return self.model.status, self.model.objective_values
+        return self.model.status, self.model.objective_value
 
     def solve(self) -> None:
         """
         Solves the BSS problem and prints the solution.
         """
-        status, objective_values = self._cutting_plane()
+        status, objective_value = self._cutting_plane()
 
-        print(status, objective_values)
-
-        logger.success("Optimal solution found:")
-
-        for i, j in self.A:
-            if self.x[i, j].x >= 1:
-                print("Route {} -> {}".format(i, j))
+        if status == mip.OptimizationStatus.OPTIMAL:
+            logger.success("Success on finding optimal solution")
+            logger.info("Objetive value: {}".format(objective_value))
+        else:
+            logger.info("Not found optimal solution")
+            logger.info("Objetive value: {}".format(objective_value))
