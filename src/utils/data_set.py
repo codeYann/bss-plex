@@ -56,7 +56,7 @@ def extract_data_set_info(
         num_vertices = ds["num_vertices"]
         demands = np.array(ds["demands"])
         vehicle_capacity = ds["vehicle_capacity"]
-        distance_matrix = np.matrix(ds["distance_matrix"])
+        distance_matrix = np.matrix(ds["distance_matrix"], dtype=np.int64)
 
         return num_vertices, demands, vehicle_capacity, distance_matrix
     except KeyError as e:
