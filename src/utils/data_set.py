@@ -1,7 +1,7 @@
 import json
 import numpy as np
 from loguru import logger
-from typing import Any, Dict, Union, Tuple
+from typing import Any, Dict, Union, Tuple, List
 import os
 
 
@@ -37,7 +37,7 @@ def get_data_json(path: str) -> Union[Dict[str, Any], None]:
 
 def extract_data_set_info(
     ds: Union[Dict[str, Any], None],
-) -> Tuple[int, np.ndarray, int, np.matrix]:
+) -> Tuple[int, np.ndarray | List[int], int, np.matrix]:
     """
     Extracts components from a dataset dictionary.
 
@@ -54,7 +54,7 @@ def extract_data_set_info(
 
     try:
         num_vertices = ds["num_vertices"]
-        demands = np.array(ds["demands"])
+        demands = list((ds["demands"]))
         vehicle_capacity = ds["vehicle_capacity"]
         distance_matrix = np.matrix(ds["distance_matrix"], dtype=np.int64)
 
