@@ -1,6 +1,6 @@
 import mip
 import numpy as np
-from typing import Set, Dict, Tuple
+from typing import Set, Dict, Tuple, Any, List
 
 
 class BSS:
@@ -19,10 +19,10 @@ class BSS:
     def __init__(
         self,
         V: Set[int],
-        A: Dict[Tuple[int, int], int],
+        A: Dict[Tuple[int, int], Any],
         m: int,
         Q: int,
-        q: np.ndarray,
+        q: np.ndarray | List[int],
         c: np.matrix,
     ) -> None:
         self.V = V
@@ -62,29 +62,28 @@ class BSS:
     def base_constraints(self) -> None:
         # Constraint: Every node besides depot is visited once.
 
-        for i in self.V:
-            self.model += self.x[i][i] == 0
+        self.model += mip.xsum(self.x[i][i] for i in self.V) == 0
 
+        for i in self.V:
             self.model += (
-                mip.xsum(self.x[i][j] for j in (self.V - {0}) if (i, j) in self.A) == 1,
+                mip.xsum(self.x[i][j] for j in (self.V - {0})) == 1,
                 "every node is viseted once on arc (i, j) except depot",
             )
-
             self.model += (
-                mip.xsum(self.x[j][i] for j in (self.V - {0}) if (i, j) in self.A) == 1,
+                mip.xsum(self.x[j][i] for j in (self.V - {0})) == 1,
                 "every node is viseted once on arc (j, i) except depot",
             )
 
         # Constraint: At most m vehicle leave the depot
         self.model += (
-            mip.xsum(self.x[0][j] for j in self.V if (0, j) in self.A) <= self.m,
+            mip.xsum(self.x[0][j] for j in self.V) <= self.m,
             "at most m vehicle leave the depot",
         )
 
         # Constraint: All vehicles used must return to the depot
         self.model += (
-            mip.xsum(self.x[0][j] for j in (self.V - {0}) if (0, j) in self.A)
-            - mip.xsum(self.x[j][0] for j in (self.V - {0}) if (0, j) in self.A)
+            mip.xsum(self.x[0][j] for j in (self.V - {0}))
+            - mip.xsum(self.x[j][0] for j in (self.V - {0}))
             == 0,
             "all vehicles used must return to the depot",
         )
