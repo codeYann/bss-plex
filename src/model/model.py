@@ -56,7 +56,7 @@ class BSS:
         Sets the objective function to minimize the total cost.
         """
         self.model.objective = mip.minimize(
-            mip.xsum(self.c[i, j] * self.x[i][j] for i in self.V for j in self.V)
+            mip.xsum(int(self.c[i, j]) * self.x[i][j] for i in self.V for j in self.V)
         )
 
     def base_constraints(self) -> None:
@@ -66,11 +66,11 @@ class BSS:
 
         for i in self.V:
             self.model += (
-                mip.xsum(self.x[i][j] for j in (self.V - {0})) == 1,
+                mip.xsum(self.x[i][j] for j in self.V if j != 0) == 1,
                 "every node is viseted once on arc (i, j) except depot",
             )
             self.model += (
-                mip.xsum(self.x[j][i] for j in (self.V - {0})) == 1,
+                mip.xsum(self.x[j][i] for j in self.V if j != 0) == 1,
                 "every node is viseted once on arc (j, i) except depot",
             )
 
@@ -82,8 +82,8 @@ class BSS:
 
         # Constraint: All vehicles used must return to the depot
         self.model += (
-            mip.xsum(self.x[0][j] for j in (self.V - {0}))
-            - mip.xsum(self.x[j][0] for j in (self.V - {0}))
+            mip.xsum(self.x[0][j] for j in self.V if j != 0)
+            - mip.xsum(self.x[j][0] for j in self.V if j != 0)
             == 0,
             "all vehicles used must return to the depot",
         )
