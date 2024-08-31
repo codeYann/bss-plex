@@ -1,11 +1,11 @@
 import json
 import numpy as np
 from loguru import logger
-from typing import Any, Dict, Union, Tuple, List
+from typing import Any, Dict, Tuple, List
 import os
 
 
-def get_data_json(path: str) -> Union[Dict[str, Any], None]:
+def get_data_json(path: str) -> Dict[str, Any]:
     """
     Reads a JSON file and returns the parsed data.
 
@@ -36,27 +36,37 @@ def get_data_json(path: str) -> Union[Dict[str, Any], None]:
 
 
 def extract_data_set_info(
-    ds: Union[Dict[str, Any], None],
-) -> Tuple[int, np.ndarray | List[int], int, np.matrix]:
+    ds: Dict[str, Any],
+) -> Tuple[int, List[int], int, np.ndarray]:
     """
     Extracts components from a dataset dictionary.
 
+    Args:
+        ds (Dict[str, Any]): The dataset dictionary.
+
     Returns:
-        Tuple[int, np.ndarray, int, np.matrix]: A tuple containing the number of vertices,
-        demands array, vehicle capacity, and distance matrix.
+        Tuple[int, List[int], int, np.ndarray]: A tuple containing the number of vertices,
+        demands list, vehicle capacity, and distance matrix.
 
     Raises:
-        ValueError: If the dataset is None or missing required keys.
+        ValueError: If the dataset is missing required keys or has invalid data.
     """
-    if ds is None:
-        logger.error("data set is None!")
-        raise ValueError("data set is None!")
+    if not ds:
+        logger.error("Input is not a dictionary!")
+        raise ValueError("Input must be a dictionary")
 
     try:
-        num_vertices = ds["num_vertices"]
-        demands = list((ds["demands"]))
-        vehicle_capacity = ds["vehicle_capacity"]
-        distance_matrix = np.matrix(ds["distance_matrix"], dtype=np.int64)
+        num_vertices = int(ds["num_vertices"])
+        demands = [int(d) for d in ds["demands"]]
+        vehicle_capacity = int(ds["vehicle_capacity"])
+        distance_matrix = np.array(ds["distance_matrix"], dtype=np.int64)
+
+        if num_vertices <= 0 or vehicle_capacity <= 0:
+            raise ValueError("num_vertices and vehicle_capacity must be positive")
+        if len(demands) != num_vertices:
+            raise ValueError("Length of demands must match num_vertices")
+        if distance_matrix.shape != (num_vertices, num_vertices):
+            raise ValueError("Distance matrix dimensions must match num_vertices")
 
         return num_vertices, demands, vehicle_capacity, distance_matrix
     except KeyError as e:
