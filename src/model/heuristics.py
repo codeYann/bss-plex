@@ -25,17 +25,13 @@ def is_path_feasible(path: List[int], demands: Dict[int, int], capacity: int) ->
 
 
 def find_closest_unserved_customer(
-    current: int, customers: List[int], visited: Set[int], distances: np.matrix
+    current: int, customers: List[int], distances: np.matrix
 ) -> int:
-    unvisited_customers = [
-        customer for customer in customers if customer not in visited
-    ]
-    if not unvisited_customers:
+    if not customers:
         return -1
-
-    closest = min(unvisited_customers, key=lambda c: distances[current, c])
-
-    return closest
+    unserved_distances = distances[current, customers]
+    closest_index = np.argmin(unserved_distances)
+    return customers[closest_index]
 
 
 def closest_neighbor(
@@ -53,7 +49,7 @@ def closest_neighbor(
         current = depot
         while True:
             next_customer = find_closest_unserved_customer(
-                current, customers, visited, distances
+                current, customers, distances
             )
 
             if next_customer == -1:
@@ -63,7 +59,6 @@ def closest_neighbor(
             extended_route.append(next_customer)
 
             if not is_path_feasible(extended_route, demands, capacity):
-                print(extended_route)
                 del extended_route
                 break
 
