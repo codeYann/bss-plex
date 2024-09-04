@@ -37,7 +37,7 @@ def get_data_json(path: str) -> Dict[str, Any]:
 
 def extract_data_set_info(
     ds: Dict[str, Any],
-) -> Tuple[int, List[int], int, np.ndarray]:
+) -> Tuple[int, List[int], int, np.matrix]:
     """
     Extracts components from a dataset dictionary.
 
