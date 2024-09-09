@@ -2,7 +2,7 @@ import math
 import mip
 import networkx as nx
 import numpy as np
-from model.heuristics import closest_neighbor
+from heuristics.closest_neighbor import closest_neighbor
 from utils.data_set import extract_data_set_info, get_data_json
 from utils.matrix import fix_diagonal_weight
 from typing import Dict, List, Set, Tuple
