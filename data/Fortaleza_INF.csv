@@ -1,0 +1,47 @@
+estação,endereço,latitude,longitude,bicicletas disponÍveis, vagas livres
+217,Av. E - Pref. José Walter,-3.8343414479306253, -38.55733279798501,9,3
+215,Av. C - Pref. José Walter,-3.8294753388807363,-38.55461614338874, 1, 11
+218,Av. Bernardo Manuel - Pref. José Walter,-3.8286788046639533, -38.560019559077375, 9, 3
+216,Av. Bernardo Manuel - Parque Dois Irmãos,-3.8210594586683437, -38.5581618096524, 5, 9
+267,Av. Bernardo Manuel - Fátima,-3.814606864351712, -38.55614366104506,5, 9
+229,Av. Bernardo Manuel - Rachel de Queiroz,-3.80759782479721, -38.55433181169064, 6, 10
+288,Av. Castelo de Castro - Jangurussu,-3.830015888934652, -38.52112921791352, 9, 3
+282,Av. Castelo de Castro - Jangurussu,-3.8354363096366004, -38.521501690925405, 7, 2
+290,Av. Jornalista Tomaz Coelho - Jangurussu,-3.82843125461841, -38.51400679796606, 4, 8
+291,Av. Jornalista Tomaz Coelho - Mondubim,-3.8295595508810045, -38.50965668947331,5, 7
+141,Av. Jornalista Tomaz Coelho - Mondubim,-3.828680313010867, -38.50914239042938,8,20
+142,Rua Angélica Gurgel - Messejana,-3.834757709485146, -38.49905294625069, 7, 5
+140,R. Padre Pedro de Alencar - Messejana,-3.8355129818982636, -38.494091831730586,1,15
+143,R. Padre Pedro de Alencar - Messejana,-3.836992814829629, -38.49402932678378,2,14
+144,R. do Murara - Paupina,-3.843881411535182, -38.493816846250795,5,11
+139,R. José Hipólito - Messejana,-3.8336696854323775, -38.490637462745845,4,10
+138,R. Vasco de Ataíde - Messejana,-3.8239283143310785, -38.48758869340079,2,14
+137,R. Frederico Severo - Messejana,-3.8176383293230693, -38.49453651434516,4,8
+136,R. Almeida Rego - Messejana,-3.8129777198650125, -38.49436653275816,6,6
+284,R. Cel. João de Oliveira - Messejana,-3.822873977058361, -38.48680669042953,6,6
+226,Av. Washington Soares - Messejana,-3.8230696324765185, -38.48203205751414,3,9
+133,Av. Desembargador Gonzaga - Cidade dos Funcionários,-3.7947566035420897, -38.500863447838945,8,4
+134,Rua Marechal Lott - Parque Iracema,-3.800394384173906, -38.49417298347802,1,15
+132,Av. Desembargador Gonzaga - Cidade dos Funcionários,-3.7947870164935074, -38.5008990039226,14,0
+131,Av. Oliveira Paiva - Cidade dos Funcionários,-3.7963444173670173, -38.49369924443647,2,14
+130,Av. Oliveira Paiva - Cidade dos Funcionários,-3.796293122064247, -38.488906690429786,3,11
+129,Av. Oliveira Paiva - Cidade dos Funcionários,-3.7959809121342296, -38.483389197400264,4,8
+128,Av. Washington Soares - Edson Queiroz,-3.7760371019502488, -38.481665003922664,5,11
+127,R. Bill Cartaxo - Lagoa Sapiranga (Coité),-3.7975152958911758, -38.47378384625117,6,6
+126,Av. Edilson Brasil Soares - Edson Queiroz,-3.7891605786942706, -38.48001516856465,4,12
+125,R. João Luís Santiago - Jardim Das Oliveiras,-3.7872313205023183, -38.49705231741545,0,12
+124,Av. José Leon - Cidade dos Funcionários,-3.787894983781261, -38.50072644157929,2,10
+123,Av. Rogaciano Leite - Guararapes,-3.762185829270153, -38.49378899740157,3,13
+122,Rua Padre Francisco Pita - Jardim Das Oliveiras,-3.781189913983939, -38.50040020392254,4,12
+121,Av. Rogaciano Leite - Guararapes,-3.775418224164189, -38.50027033050395,3,9
+120,Av. Rogaciano Leite - Guararapes,-3.7710278009057765, -38.497982263444236,7,9
+119,Rua Dr. Thompson Bulcão - Eng. Luciano Cavalcante,-3.76776700735663, -38.49665498390847,3,18
+118,Defensoria Pública Geral - Av. Pinto Bandeira - Eng. Luciano Cavalcante,-3.7732206125172674, -38.4865620615943,2,12
+117,R. Roberto Silva - Edson Queiroz,-3.772615323065787, -38.47527343275847,2,10
+116,R. Cidade Ecológica - Edson Queiroz,-3.773457301412185, -38.466622761594216,2,14
+111,R. Cidade Ecológica - Edson Queiroz,-3.7735067571647836, -38.46401503275833,11,5
+70,Av. Coronel Miguel Dias - Guararapes,-3.7578455212296302, -38.48838074810169,3,18
+72,Guararapes - Fortaleza - CE,-3.759007176747355, -38.48407831805146,3,5
+73,R. Eliseu Uchôa Beco - Guararapes,-3.7641986937960246, -38.486019032758676,3,9
+74,Edson Queiroz - Fortaleza, -3.7707345528688956, -38.48180236646455,8,6
+76,Edson Queiroz - Fortaleza,-3.7726520134437442, -38.480680177908475,2,14
