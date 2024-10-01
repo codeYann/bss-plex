@@ -1,4 +1,4 @@
-estação,endereço,latitude,longitude,bicicletas disponÍveis, vagas livres
+station,address,latitude,longitude,available_bikes,free_slots
 0,Rua Desembargador João Firmino - Montese,-3.763597231114326, -38.55555534190326,0,0
 30,R. Barbosa de Freitas - Aldeota,-3.737536981929198, -38.49766756159454, 5, 11
 29,Av. Antônio Sales - Dionísio Torres,-3.745570571953943, -38.50181947508717,11,5

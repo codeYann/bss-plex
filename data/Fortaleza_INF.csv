@@ -1,4 +1,4 @@
-estação,endereço,latitude,longitude,bicicletas disponÍveis, vagas livres
+station,address,latitude,longitude,available_bikes,free_slots
 0,Rua Desembargador João Firmino - Montese,-3.763597231114326, -38.55555534190326,0,0
 217,Av. E - Pref. José Walter,-3.8343414479306253, -38.55733279798501,9,3
 215,Av. C - Pref. José Walter,-3.8294753388807363,-38.55461614338874, 1, 11

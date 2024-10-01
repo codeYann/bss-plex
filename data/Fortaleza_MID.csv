@@ -1,4 +1,4 @@
-estação,endereço,latitude,longitude,bicicletas disponÍveis,vagas livres
+station,address,latitude,longitude,available_bikes,free_slots
 0,Rua Desembargador João Firmino - Montese,-3.763597231114326, -38.55555534190326,0,0
 264,R. Francisco Glicério- Maraponga,-3.797448101160866, -38.5640907620181,9,3
 235,R. Carlos Juaçaba - Maraponga,-3.794133883401658, -38.56245603676264,9,3

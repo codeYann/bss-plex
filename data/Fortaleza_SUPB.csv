@@ -1,4 +1,4 @@
-estação,endereço,latitude,longitude,bicicletas disponÍveis,vagas livres
+station,address,latitude,longitude,available_bikes,free_slots
 0,Rua Desembargador João Firmino - Montese,-3.763597231114326, -38.55555534190326,0,0
 112,R. Padre Ibiapina - Jacarecanga,-3.7299497208184955, -38.53986947377878,2,14
 80,SENAI - Jacarecanga,-3.726405710264341, -38.54065822280009,4,12
