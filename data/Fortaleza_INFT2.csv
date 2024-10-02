@@ -1,0 +1,27 @@
+station,address,latitude,longitude,available_bikes,free_slots
+0,Rua Desembargador João Firmino - Montese,-3.763597231114326, -38.55555534190326,0,0
+133,Av. Desembargador Gonzaga - Cidade dos Funcionários,-3.800579533482176, -38.49777840909007,5,7
+134,Rua Marechal Lott - Parque Iracema,-3.800394384173906, -38.49417298347802,4,12
+132,Av. Desembargador Gonzaga - Cidade dos Funcionários,-3.7949364217922303, -38.500897322096066,10,4
+131,Av. Oliveira Paiva - Cidade dos Funcionários,-3.7963444173670173, -38.49369924443647,1,15
+130,Av. Oliveira Paiva - Cidade dos Funcionários,-3.796293122064247, -38.488906690429786,2,12
+129,Av. Oliveira Paiva - Cidade dos Funcionários,-3.7959809121342296, -38.483389197400264,5,7
+128,Av. Washington Soares - Edson Queiroz,-3.7760371019502488, -38.481665003922664,6,10
+127,R. Bill Cartaxo - Lagoa Sapiranga (Coité),-3.7975152958911758, -38.47378384625117,7,5
+126,Av. Edilson Brasil Soares - Edson Queiroz,-3.7891605786942706, -38.48001516856465,2,14
+125,R. João Luís Santiago - Jardim Das Oliveiras,-3.7872313205023183, -38.49705231741545,3,9
+124,Av. José Leon - Cidade dos Funcionários,-3.787894983781261, -38.50072644157929,8,4
+123,Av. Rogaciano Leite - Guararapes,-3.762185829270153, -38.49378899740157,2,14
+122,Rua Padre Francisco Pita - Jardim Das Oliveiras,-3.781189913983939, -38.50040020392254,12,4
+121,Av. Rogaciano Leite - Guararapes,-3.775418224164189, -38.50027033050395,3,9
+120,Av. Rogaciano Leite - Guararapes,-3.7710278009057765, -38.497982263444236,3,13
+119,Rua Dr. Thompson Bulcão - Eng. Luciano Cavalcante,-3.76776700735663, -38.49665498390847,6,15
+118,Defensoria Pública Geral - Av. Pinto Bandeira - Eng. Luciano Cavalcante,-3.7732206125172674, -38.4865620615943,2,12
+117,R. Roberto Silva - Edson Queiroz,-3.772615323065787, -38.47527343275847,1,11
+116,R. Cidade Ecológica - Edson Queiroz,-3.773457301412185, -38.466622761594216,5,11
+111,R. Cidade Ecológica - Edson Queiroz,-3.7735067571647836, -38.46401503275833,4,12
+70,Av. Coronel Miguel Dias - Guararapes,-3.7578455212296302, -38.48838074810169,2,19
+72,Guararapes - Fortaleza - CE,-3.759007176747355, -38.48407831805146,3,5
+73,R. Eliseu Uchôa Beco - Guararapes,-3.7641986937960246, -38.486019032758676,4,8
+74,Edson Queiroz - Fortaleza, -3.7707345528688956, -38.48180236646455,5,9
+76,Edson Queiroz - Fortaleza,-3.7726520134437442, -38.480680177908475,0,16

@@ -1,0 +1,24 @@
+station,address,latitude,longitude,available_bikes,free_slots
+0,Rua Desembargador João Firmino - Montese,-3.763597231114326, -38.55555534190326,0,0
+217,Av. E - Pref. José Walter,-3.8343414479306253, -38.55733279798501,3,9
+215,Av. C - Pref. José Walter,-3.8294753388807363,-38.55461614338874, 9, 3
+218,Av. Bernardo Manuel - Pref. José Walter,-3.8286788046639533, -38.560019559077375, 4, 8
+216,Av. Bernardo Manuel - Parque Dois Irmãos,-3.8210594586683437, -38.5581618096524, 1, 13
+267,Av. Bernardo Manuel - Fátima,-3.814606864351712, -38.55614366104506,2, 12
+229,Av. Bernardo Manuel - Rachel de Queiroz,-3.80759782479721, -38.55433181169064, 5, 11
+231,R. Benjamim Brasil - Jardim Cearense,-3.8088808247756933, -38.55746487774421,5,7
+288,Av. Castelo de Castro - Jangurussu,-3.830015888934652, -38.52112921791352, 10, 2
+282,Av. Castelo de Castro - Jangurussu,-3.8354363096366004, -38.521501690925405, 6, 6
+290,Av. Jornalista Tomaz Coelho - Jangurussu,-3.82843125461841, -38.51400679796606, 5, 7
+291,Av. Jornalista Tomaz Coelho - Mondubim,-3.8295595508810045, -38.50965668947331,2, 10
+141,Av. Jornalista Tomaz Coelho - Mondubim,-3.828680313010867, -38.50914239042938,2,26
+142,Rua Angélica Gurgel - Messejana,-3.834757709485146, -38.49905294625069, 5, 7
+140,R. Padre Pedro de Alencar - Messejana,-3.8355129818982636, -38.494091831730586,4,12
+143,R. Padre Pedro de Alencar - Messejana,-3.836992814829629, -38.49402932678378,7,9
+144,R. do Murara - Paupina,-3.843881411535182, -38.493816846250795,7,9
+139,R. José Hipólito - Messejana,-3.8336696854323775, -38.490637462745845,5,9
+138,R. Vasco de Ataíde - Messejana,-3.8239283143310785, -38.48758869340079,9,7
+137,R. Frederico Severo - Messejana,-3.8176383293230693, -38.49453651434516,7,5
+136,R. Almeida Rego - Messejana,-3.8129777198650125, -38.49436653275816,4,8
+284,R. Cel. João de Oliveira - Messejana,-3.822873977058361, -38.48680669042953,9,3
+226,Av. Washington Soares - Messejana,-3.8230696324765185, -38.48203205751414,9,3
