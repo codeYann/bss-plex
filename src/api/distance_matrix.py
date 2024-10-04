@@ -84,6 +84,6 @@ def generate_distance_matrix(instance: Dict[str, Any]) -> List[List[int]]:
                 )
 
         # small delay to avoid api rate limits
-        sleep(0.3)
+        sleep(1.5)
 
     return matrix
