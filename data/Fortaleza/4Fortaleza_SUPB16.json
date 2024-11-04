@@ -51,7 +51,7 @@
         -2,
         -3
     ],
-    "vehicle_capacity": 40,
+    "vehicle_capacity": 16,
     "distance_matrix": [
         [
             0,
